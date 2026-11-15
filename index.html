@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yaadein - Lyrics</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;min-height:100vh;background:#050505;color:white;
+ display:flex;align-items:center;justify-content:center;
+ font-family:Arial,sans-serif;overflow:hidden;
+}
+body:before{
+ content:"";position:fixed;inset:0;
+ background:radial-gradient(ellipse at center,#390909 0%,#100303 45%,#020202 100%);
+}
+.card{position:relative;text-align:center;padding:25px;width:100%;max-width:700px}
+.tag{color:#e34242;letter-spacing:7px;font-size:12px}
+h1{font-size:clamp(40px,10vw,76px);letter-spacing:8px;margin:20px 0;color:#fff;text-shadow:0 0 25px #b00000}
+#lyric{font-size:clamp(20px,5vw,34px);line-height:1.5;min-height:110px;text-shadow:0 0 18px #ff2222}
+.line{height:2px;width:90px;background:#b00000;margin:25px auto;box-shadow:0 0 15px red}
+small{color:#888;letter-spacing:3px}
+</style>
+</head>
+<body>
+<div class="card">
+ <div class="tag">A STORY IN EVERY MEMORY</div>
+ <h1>YAADEIN</h1>
+ <div class="line"></div>
+ <div id="lyric">Kuch baatein adhoori hain...</div>
+ <div class="line"></div>
+ <small>FEEL EVERY WORD</small>
+ <p><input type="file" id="audio" accept="audio/*"></p>
+ <audio id="player" controls></audio>
+</div>
+<script>
+const lyrics=[
+"Kuch baatein adhoori hain, kuch raatein gawaah hain",
+"Jo keh na sake kabhi, woh lafzon mein panaah hain",
+"Yaadein teri aaj bhi kam nahi hoti",
+"Raat dhal jaaye, par subah nahi hoti",
+"Chehre pe hasi hai, andar khamoshi",
+"Ab kisi se pehle jaisi baat nahi hoti",
+"Yaadein...",
+"Dil mein dabi hain saari farmaaishein",
+"Yaadein... yaadein...",
+"Khud se hi karta hoon ab saari guzaarishein",
+"Khaak mein khwaab ka nishaan abhi baaki",
+"Jebon mein khamoshi, aankhon mein raatein",
+"Waqt ne sikhaya kaise chehre badalte hain",
+"Apne hi log kabhi anjaan se lagte hain",
+"Main bhi tha masoom, mujhe ilm nahi tha",
+"Har muskaan ke peeche sach nahi tha",
+"Jinpe tha yakeen, woh hi door chale gaye",
+"Kuch sawaal dil mein adhoore reh gaye",
+"Na koi shikwa, na koi gila hai",
+"Jo bhi mila mujhe, waqt ka sila hai",
+"Main apni hi dhun mein safar kar raha",
+"Jo kal mera tha, aaj woh kahaan hai",
+"Yaadein teri aaj bhi kam nahi hoti",
+"Raat dhal jaaye, par subah nahi hoti",
+"Chehre pe hasi hai, andar khamoshi",
+"Ab kisi se pehle jaisi baat nahi hoti",
+"Bedoor tha tera ya mera bharam tha",
+"Jo bhi tha darr, miyaan, kuch toh alag tha",
+"Lafzon mein kehna kabhi aasaan na tha",
+"Dil mein jo tha, woh bayaan na hua",
+"Shehar wahi hai, magar log naye hain",
+"Kisse wahi hain, magar rang naye hain",
+"Main waqt ke pannon pe likhta raha",
+"Jo khud se chhupaya, woh kehta raha",
+"Ab na kisi se koi umeed rakhta",
+"Na har kisi ko apna naseeb likhta",
+"Main gira nahi, bas sambhalna seekha",
+"Har ek dard ko ghazal mein likha",
+"Kuch yaadein mitayi nahi jaati",
+"Kuch baatein batayi nahi jaati",
+"Aur kuch log bas kahaani ban jaate hain..."
+];
+const file=document.getElementById('audio');
+const player=document.getElementById('player');
+const display=document.getElementById('lyric');
+let timers=[];
+file.onchange=()=>{
+ if(file.files[0]) player.src=URL.createObjectURL(file.files[0]);
+};
+player.ontimeupdate=()=>{
+ const duration=player.duration;
+ if(!duration)return;
+ const index=Math.min(lyrics.length-1,Math.floor(player.currentTime/duration*lyrics.length));
+ display.textContent=lyrics[index];
+};
+</script>
+</body>
+</html>

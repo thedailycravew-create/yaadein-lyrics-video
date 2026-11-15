@@ -3,40 +3,114 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yaadein - Lyrics</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YAADEIN</title>
 <style>
 *{box-sizing:border-box}
 body{
- margin:0;min-height:100vh;background:#050505;color:white;
- display:flex;align-items:center;justify-content:center;
+ margin:0;background:#030102;color:white;
  font-family:Arial,sans-serif;overflow:hidden;
 }
-body:before{
- content:"";position:fixed;inset:0;
- background:radial-gradient(ellipse at center,#390909 0%,#100303 45%,#020202 100%);
+.scene{
+ height:100dvh;width:100%;
+ display:flex;align-items:center;justify-content:center;
+ position:relative;overflow:hidden;
+ background:
+ radial-gradient(ellipse at 50% 45%,#650808 0%,#260304 35%,#080203 75%,#010101 100%);
 }
-.card{position:relative;text-align:center;padding:25px;width:100%;max-width:700px}
-.tag{color:#e34242;letter-spacing:7px;font-size:12px}
-h1{font-size:clamp(40px,10vw,76px);letter-spacing:8px;margin:20px 0;color:#fff;text-shadow:0 0 25px #b00000}
-#lyric{font-size:clamp(20px,5vw,34px);line-height:1.5;min-height:110px;text-shadow:0 0 18px #ff2222}
-.line{height:2px;width:90px;background:#b00000;margin:25px auto;box-shadow:0 0 15px red}
-small{color:#888;letter-spacing:3px}
+.monitor{
+ position:absolute;width:125%;height:66%;
+ top:12%;left:-12%;
+ transform:perspective(900px) rotateX(7deg) rotateY(-5deg);
+ border:9px solid #18090a;border-radius:12px;
+ background:#080b10;box-shadow:0 0 35px #a00000,0 25px 60px #000;
+ overflow:hidden;
+}
+#code{width:100%;height:100%;display:block;opacity:.9}
+.monitor:after{
+ content:"";position:absolute;inset:0;
+ background:linear-gradient(110deg,transparent 20%,#ff000014 50%,transparent 80%);
+ pointer-events:none;
+}
+.wall{
+ position:absolute;inset:0;
+ background:repeating-linear-gradient(0deg,transparent 0 55px,#8b00001a 57px 60px);
+ opacity:.6;
+}
+.lyric-card{
+ z-index:2;width:76%;min-height:300px;
+ padding:25px 19px 30px;
+ background:linear-gradient(145deg,#520811ed,#190309f5 75%);
+ border:1px solid #a21a2c;
+ border-radius:18px;
+ transform:perspective(700px) rotateY(-7deg) rotateX(3deg);
+ box-shadow:0 0 28px #d00030a0,12px 18px 45px #000;
+ position:relative;
+}
+.profile{display:flex;align-items:center;gap:10px;margin-bottom:25px}
+.avatar{
+ width:34px;height:34px;border-radius:50%;
+ background:radial-gradient(circle at 35% 30%,#ffb56c,#a32727 55%,#190308);
+ border:1px solid #ff6478;
+}
+.name{font-size:13px;font-weight:bold}
+.sub{font-size:9px;color:#ff9aa5;margin-top:3px}
+.star{margin-left:auto;color:#ffb8bd}
+#lyric{
+ min-height:170px;display:flex;align-items:center;
+ justify-content:center;text-align:center;
+ font-weight:900;
+ font-size:clamp(19px,5vw,30px);
+ line-height:1.55;color:#ff2538;
+ text-shadow:0 0 5px #ff001e,0 0 16px #f00024,0 0 28px #b00019;
+ animation:appear .7s ease;
+}
+@keyframes appear{
+ from{opacity:0;transform:translateY(12px)}
+ to{opacity:1;transform:translateY(0)}
+}
+.bottom-glow{
+ position:absolute;bottom:8%;width:100%;height:90px;
+ background:radial-gradient(ellipse,#a0001d55,transparent 70%);
+}
+.controls{
+ position:absolute;z-index:5;bottom:22px;left:50%;
+ transform:translateX(-50%);width:90%;text-align:center;
+}
+.controls button{
+ background:#7c0718;color:white;border:1px solid #ff435b;
+ padding:10px 18px;border-radius:22px;font-weight:bold;
+}
+.controls input{max-width:100%;font-size:12px;color:#ddd}
+#status{font-size:11px;color:#ff9aa5;margin-top:7px}
 </style>
 </head>
 <body>
-<div class="card">
- <div class="tag">A STORY IN EVERY MEMORY</div>
- <h1>YAADEIN</h1>
- <div class="line"></div>
- <div id="lyric">Kuch baatein adhoori hain...</div>
- <div class="line"></div>
- <small>FEEL EVERY WORD</small>
- <p><input type="file" id="audio" accept="audio/*"></p>
- <audio id="player" controls></audio>
+<div class="scene">
+ <div class="wall"></div>
+ <div class="monitor"><canvas id="code"></canvas></div>
+ <div class="lyric-card">
+  <div class="profile">
+   <div class="avatar"></div>
+   <div>
+    <div class="name">YAADEIN</div>
+    <div class="sub">A STORY IN EVERY MEMORY</div>
+   </div>
+   <div class="star">★ •••</div>
+  </div>
+  <div id="lyric">Yaadein...</div>
+ </div>
+ <div class="bottom-glow"></div>
+ <div class="controls">
+  <input type="file" id="file" accept="audio/*">
+  <br><br>
+  <button id="play">▶ PLAY</button>
+  <div id="status">Choose your Yaadein audio</div>
+ </div>
 </div>
+<audio id="audio"></audio>
 <script>
-const lyrics=[
+const lines=[
 "Kuch baatein adhoori hain, kuch raatein gawaah hain",
 "Jo keh na sake kabhi, woh lafzon mein panaah hain",
 "Yaadein teri aaj bhi kam nahi hoti",
@@ -79,19 +153,76 @@ const lyrics=[
 "Kuch baatein batayi nahi jaati",
 "Aur kuch log bas kahaani ban jaate hain..."
 ];
-const file=document.getElementById('audio');
-const player=document.getElementById('player');
-const display=document.getElementById('lyric');
-let timers=[];
+const audio=document.getElementById("audio");
+const file=document.getElementById("file");
+const lyric=document.getElementById("lyric");
+const status=document.getElementById("status");
+let current=-1;
 file.onchange=()=>{
- if(file.files[0]) player.src=URL.createObjectURL(file.files[0]);
+ if(file.files.length){
+  audio.src=URL.createObjectURL(file.files[0]);
+  status.textContent="Audio ready — press PLAY";
+ }
 };
-player.ontimeupdate=()=>{
- const duration=player.duration;
- if(!duration)return;
- const index=Math.min(lyrics.length-1,Math.floor(player.currentTime/duration*lyrics.length));
- display.textContent=lyrics[index];
+document.getElementById("play").onclick=()=>{
+ if(!audio.src){status.textContent="Choose your audio first";return}
+ if(audio.paused){
+  audio.play();document.getElementById("play").textContent="Ⅱ PAUSE";
+ }else{
+  audio.pause();document.getElementById("play").textContent="▶ PLAY";
+ }
 };
+audio.ontimeupdate=()=>{
+ if(!audio.duration)return;
+ let i=Math.min(lines.length-1,
+ Math.floor(audio.currentTime/audio.duration*lines.length));
+ if(i!==current){
+  current=i;lyric.style.animation="none";
+  void lyric.offsetWidth;lyric.style.animation="appear .7s ease";
+  lyric.textContent=lines[i];
+ }
+};
+audio.onended=()=>{
+ document.getElementById("play").textContent="▶ PLAY";
+ status.textContent="Yaadein — finished";
+};
+
+// Animated computer code background
+const canvas=document.getElementById("code");
+const ctx=canvas.getContext("2d");
+const snippets=[
+"const memories = [];","function remember() {",
+"let heart = 'broken';","console.log('Yaadein');",
+"while (night) { dream(); }","return memories;",
+"import { feelings } from './heart';",
+"if (love) { remember(); }","const silence = true;",
+"// some stories never end","let time = 00:00;",
+"document.querySelector('.heart');"
+];
+function resize(){
+ canvas.width=canvas.clientWidth*devicePixelRatio;
+ canvas.height=canvas.clientHeight*devicePixelRatio;
+}
+resize();window.addEventListener("resize",resize);
+let offset=0;
+function draw(){
+ const w=canvas.width,h=canvas.height;
+ ctx.fillStyle="#080b10";ctx.fillRect(0,0,w,h);
+ ctx.font=(13*devicePixelRatio)+"px monospace";
+ for(let y=-30;y<h+50;y+=25*devicePixelRatio){
+  for(let x=8*devicePixelRatio;x<w;x+=190*devicePixelRatio){
+   let n=Math.abs(Math.floor(x/190+y/25+offset/25))%snippets.length;
+   ctx.fillStyle=["#64c7a1","#d5a45c","#7b9fe0","#e65b67"][n%4];
+   ctx.globalAlpha=.35+((n%4)*.12);
+   ctx.fillText(snippets[n],x,y+offset%(25*devicePixelRatio));
+  }
+ }
+ ctx.globalAlpha=1;
+ offset+=.55*devicePixelRatio;
+ requestAnimationFrame(draw);
+}
+draw();
 </script>
 </body>
 </html>
+
